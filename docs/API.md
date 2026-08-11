@@ -19,7 +19,7 @@ Todos los endpoints devuelven JSON, excepto los marcados como binarios. La valid
 | `GET` | `/palette/count` | original | Cantidad de paletas creadas en las últimas 24h (cacheado 5min) |
 | `GET` | `/og/get` | original | Imagen PNG OpenGraph de una paleta |
 | `GET` | `/og/tag` | original | Imagen PNG OpenGraph de grid de paletas por tag |
-| `POST` | `/feedback` | original | Enviar feedback por email |
+| `POST` | `/feedback/create` | original | Enviar feedback por email |
 | `GET` | `/random-color` | nuevo | Color aleatorio en HEX + RGB |
 | `GET` | `/contrast-checker` | nuevo | Ratio de contraste WCAG entre dos colores |
 | `GET` | `/color-mixer` | nuevo | Mezcla dos colores (HSL + RGB lineal) |
@@ -29,6 +29,8 @@ Todos los endpoints devuelven JSON, excepto los marcados como binarios. La valid
 | `GET` | `/color-name` | nuevo | Nombre del color más cercano del diccionario (14.394 nombres) |
 | `POST` | `/color-token-extractor` | nuevo | Extrae los CSS custom properties de color de una URL (Fase 1) |
 | `POST` | `/color-token-extractor/runtime` | nuevo | Analiza la página renderizada en Chromium: paleta de uso + contraste WCAG + screenshot (Fase 2, requiere worker Docker) |
+| `GET` | `/image-url` | nuevo | Proxy de imágenes por URL → data URL base64 (para el Image Color Picker) |
+| `GET` | `/stock-search` | nuevo | Búsqueda de imágenes de stock (Unsplash/Pexels/Pixabay) con fallback de muestras |
 
 ---
 
@@ -133,7 +135,7 @@ Genera una imagen PNG OpenGraph tipo grid con todas las paletas que tienen un ta
 - **Response 200:** `Content-Type: image/png` (binario)
 - **Archivo:** `layers/og/server/api/og/tag.get.ts`
 
-### `POST /feedback`
+### `POST /feedback/create`
 
 Guarda feedback enviado desde el formulario del sitio.
 
@@ -144,6 +146,7 @@ Guarda feedback enviado desde el formulario del sitio.
   - `email`: formato email válido
   - `feedback`: string, máx 5000 chars
 - **Response 201:** sin body.
+- **Ruta real:** `/api/feedback/create` (archivo `create.ts` bajo `server/api/feedback/`).
 - **Archivo:** `layers/feedback/server/api/feedback/create.ts`
 
 ---
@@ -428,6 +431,41 @@ detección de **dark mode** con dos renders (light + dark).
 - **Response 502:** `"Rendered analysis unavailable. The renderer worker is offline."` si el worker no está levantado.
 - **Archivo:** `layers/color-token-extractor/server/api/color-token-extractor/runtime/index.post.ts`
 - **Dependencias:** worker Docker `magikolor-renderer` (Playwright, puerto 3100 por default, env `RENDERER_URL`). Sin el worker, este endpoint responde 502 — la Fase 1 sigue funcionando sola.
+
+### `GET /image-url`
+
+Proxy de imágenes por URL para el Image Color Picker. El navegador no puede fetchear URLs arbitrarias por CORS, así que la imagen se descarga server-side y se devuelve como data URL base64 (mismo formato que produce un `<input type="file">`).
+
+- **Query:**
+  - `url` (obligatorio): URL `http(s)` de la imagen. Hosts privados/locales bloqueados (SSRF).
+- **Response 200:**
+  ```json
+  { "dataUrl": "data:image/jpeg;base64,/9j/4AAQ..." }
+  ```
+- **Response 400:** URL faltante/inválida, host privado, no es imagen o supera los 10 MB.
+- **Archivo:** `layers/image-color-picker/server/api/image-url/index.get.ts`
+- **Dependencias:** ninguna (fetch nativo de Node).
+
+### `GET /stock-search`
+
+Búsqueda de imágenes de stock para el Mood Palette (Unsplash / Pexels / Pixabay).
+
+- **Query:**
+  - `q`: término de búsqueda. Si está vacío, devuelve las imágenes de muestra.
+  - `provider` (opcional): `unsplash` (default) | `pexels` | `pixabay`.
+- **Env vars:** `UNSPLASH_ACCESS_KEY`, `PEXELS_API_KEY`, `PIXABAY_API_KEY`. Sin key configurada, devuelve un fallback de 8 imágenes de muestra (con `fallback: true`) para que la herramienta funcione sin configuración.
+- **Response 200:**
+  ```json
+  {
+    "results": [
+      { "id": "unsplash-abc123", "url": "https://images.unsplash.com/...", "author": "John Doe", "pageUrl": "https://unsplash.com/photos/...", "provider": "unsplash" }
+    ],
+    "fallback": false
+  }
+  ```
+  `fallback` solo aparece cuando se devuelven las muestras.
+- **Archivo:** `layers/mood-palette/server/api/stock-search/index.get.ts`
+- **Dependencias:** opcional — API keys de los proveedores de stock.
 
 ---
 

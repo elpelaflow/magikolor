@@ -39,6 +39,23 @@
       <pre class="border bg-gray-50 rounded-sm px-1 text-sm">body: { "prompt": string }</pre>
     </div>
 
+    <!-- clone color palette -->
+    <div class="mb-4 space-y-2">
+      <p class="font-semibold">
+        [POST] clone color palette:
+      </p>
+      <pre class="border bg-gray-50 rounded-sm px-1">{{ clonePaletteUrl }}</pre>
+      <pre class="border bg-gray-50 rounded-sm px-1 text-sm">body: { "id": string, "colors": string[] }</pre>
+    </div>
+
+    <!-- count color palettes -->
+    <div class="mb-4 space-y-2">
+      <p class="font-semibold">
+        [GET] count color palettes (last 24h):
+      </p>
+      <pre class="border bg-gray-50 rounded-sm px-1">{{ countPalettesUrl }}</pre>
+    </div>
+
     <!-- harmonies -->
     <div class="mb-4 space-y-2">
       <p class="font-semibold">
@@ -101,6 +118,15 @@
       <pre class="border bg-gray-50 rounded-sm px-1 text-sm">body: { "image": "data:image/...;base64,...", "count": number }</pre>
     </div>
 
+    <!-- image url proxy -->
+    <div class="mb-4 space-y-2">
+      <p class="font-semibold">
+        [GET] image url (proxy to data URL):
+      </p>
+      <pre class="border bg-gray-50 rounded-sm px-1">{{ imageUrl }}</pre>
+      <pre class="border bg-gray-50 rounded-sm px-1 text-sm">query: { url: string }</pre>
+    </div>
+
     <!-- color token extractor -->
     <div class="mb-4 space-y-2">
       <p class="font-semibold">
@@ -128,6 +154,33 @@
       <pre class="border bg-gray-50 rounded-sm px-1 text-sm">body: { "email": string, "feedback": string }</pre>
     </div>
 
+    <!-- og get -->
+    <div class="mb-4 space-y-2">
+      <p class="font-semibold">
+        [GET] open graph image (palette):
+      </p>
+      <pre class="border bg-gray-50 rounded-sm px-1">{{ ogGetUrl }}</pre>
+      <pre class="border bg-gray-50 rounded-sm px-1 text-sm">query: { colors: string, text: string } — devuelve image/png</pre>
+    </div>
+
+    <!-- og tag -->
+    <div class="mb-4 space-y-2">
+      <p class="font-semibold">
+        [GET] open graph image (tag grid):
+      </p>
+      <pre class="border bg-gray-50 rounded-sm px-1">{{ ogTagUrl }}</pre>
+      <pre class="border bg-gray-50 rounded-sm px-1 text-sm">query: { tag: string, text: string } — devuelve image/png</pre>
+    </div>
+
+    <!-- stock search -->
+    <div class="mb-4 space-y-2">
+      <p class="font-semibold">
+        [GET] stock image search:
+      </p>
+      <pre class="border bg-gray-50 rounded-sm px-1">{{ stockSearchUrl }}</pre>
+      <pre class="border bg-gray-50 rounded-sm px-1 text-sm">query: { q: string, provider?: "unsplash" | "pexels" | "pixabay" }</pre>
+    </div>
+
     <UAlert
       class="mt-8"
       color="yellow"
@@ -148,6 +201,8 @@ const { apiUrl } = useRuntimeConfig().public;
 const getPaletteUrl = `${apiUrl}/palette/{paletteId}`;
 const listPalettesUrl = `${apiUrl}/palette/list`;
 const createPaletteUrl = `${apiUrl}/palette/create`;
+const clonePaletteUrl = `${apiUrl}/palette/clone`;
+const countPalettesUrl = `${apiUrl}/palette/count`;
 const harmoniesUrl = `${apiUrl}/harmonies?base=%232D6A4F&type=analogous&style=circle&count=8`;
 const pantoneUrl = `${apiUrl}/pantone?hex=%23f6eb64&limit=3`;
 const colorNameUrl = `${apiUrl}/color-name?hex=%232C3E50`;
@@ -155,9 +210,13 @@ const randomColorUrl = `${apiUrl}/random-color`;
 const contrastCheckerUrl = `${apiUrl}/contrast-checker?primary=%23ffffff&secondary=%23000000`;
 const colorMixerUrl = `${apiUrl}/color-mixer?a=%23ff0000&b=%230000ff&ratio=0.5`;
 const imageColorPickerUrl = `${apiUrl}/image-color-picker`;
+const imageUrl = `${apiUrl}/image-url?url=https%3A%2F%2Fexample.com%2Fimage.jpg`;
 const colorTokenExtractorUrl = `${apiUrl}/color-token-extractor`;
 const colorTokenRuntimeUrl = `${apiUrl}/color-token-extractor/runtime`;
-const feedbackUrl = `${apiUrl}/feedback`;
+const feedbackUrl = `${apiUrl}/feedback/create`;
+const ogGetUrl = `${apiUrl}/og/get?colors=%23ff0000:%2300ff00:%230000ff&text=My%20palette`;
+const ogTagUrl = `${apiUrl}/og/tag?tag=green&text=Green%20palettes`;
+const stockSearchUrl = `${apiUrl}/stock-search?q=sunset`;
 
 useSeoMeta({
   title,
