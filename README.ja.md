@@ -407,16 +407,14 @@ npm test   # 以下すべてを実行
 ├── compose.yml              # MongoDB + レンダラーワーカーのサービス
 ├── nuxt.config.ts           # メインの Nuxt 設定
 ├── tailwind.config.ts       # Tailwind テーマ（色、シャドウ、アスペクト比）
-├── colorpalettes.json       # 同梱シードデータ: 約 17,400 パレット（追跡対象）
-├── colordatabase.json       # ローカルのカラーデータベース（約 13,600 色、gitignored）
-└── colors_pantone.csv       # Pantone 参照データ（追跡対象）
+├── databases/               # ローカルデータセット: シードパレット、色、Pantone 参照
 ```
 
 ### 同梱データセット
 
 | データセット | 場所 | サイズ |
 |---|---|---|
-| パレット（シード） | `colorpalettes.json` | 約 17,390 パレット |
+| パレット（シード） | `databases/colorpalettes.json` | 約 17,390 パレット |
 | カラーネーム辞書 | `layers/palette/utils/color-names-data.json` | 14,394 語 |
 | Pantone ガイド | `layers/all-colors/utils/pantone-data.json` | 3,219 サンプル（Solid Coated、Pastels & Neons、Metallics） |
 | ブランドカラー | `layers/brand-colors/utils/brand-colors-data.json` | 910 ブランド / 2,754 色 |

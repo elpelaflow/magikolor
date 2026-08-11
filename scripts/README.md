@@ -16,7 +16,7 @@ docker compose up -d
 # 2) Instalar dependencias
 npm install
 
-# 3) Importar las 17.388 paletas desde colorpalettes.json (raiz del repo)
+# 3) Importar las 17.388 paletas desde databases/colorpalettes.json
 #    Reemplaza el contenido de la collection (modo REPLACE).
 #    Demora <1s. Para conservar docs existentes, agregar --keep.
 node scripts/import-palettes.mjs
@@ -32,7 +32,7 @@ npm run dev
 
 ## import-palettes.mjs
 
-Importa paletas desde `colorpalettes.json` (raiz del repo, gitignored).
+Importa paletas desde `databases/colorpalettes.json` (trackeado en el repo).
 
 Formato aceptado: array de objetos `{ name, colors[5], category }` (string label humano como "Trending").
 

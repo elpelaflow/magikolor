@@ -1,6 +1,6 @@
 /**
  * Genera `layers/palette/utils/color-names-data.json` a partir de:
- *   1. `colordatabase.json` (raíz del repo, ~13.6k colores con {id, name, hex, ...}) como base
+ *   1. `databases/colordatabase.json` (~13.6k colores con {id, name, hex, ...}) como base
  *   2. Los hex de ntc (Name that Color) que colordatabase no cubre, como relleno.
  *
  * Fuente del relleno (idempotente):
@@ -23,7 +23,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const NTC_PATH = path.join(ROOT, 'layers/palette/utils/ntc.util.js');
 const DATA_PATH = path.join(ROOT, 'layers/palette/utils/color-names-data.json');
 
-const dbRaw = JSON.parse(fs.readFileSync(path.join(ROOT, 'colordatabase.json'), 'utf8'));
+const dbRaw = JSON.parse(fs.readFileSync(path.join(ROOT, 'databases', 'colordatabase.json'), 'utf8'));
 const ntcSrc = fs.readFileSync(NTC_PATH, 'utf8');
 
 // --- base: colordatabase.json ---

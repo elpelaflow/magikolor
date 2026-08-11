@@ -407,16 +407,14 @@ Scripts de utilidad bajo [`scripts/`](./scripts/) para poblar datos, migraciones
 ├── compose.yml              # Servicios de MongoDB + worker de renderizado
 ├── nuxt.config.ts           # Configuración principal de Nuxt
 ├── tailwind.config.ts       # Tema de Tailwind (colores, sombras, aspect ratios)
-├── colorpalettes.json       # Datos de seed incluidos: ~17,4 mil paletas (trackeado)
-├── colordatabase.json       # Base de datos local de colores (~13,6 mil colores; gitignored)
-└── colors_pantone.csv       # Datos de referencia de Pantone (trackeado)
+├── databases/               # Datasets locales: paletas seed, colores y referencia Pantone
 ```
 
 ### Datasets incluidos
 
 | Dataset | Ubicación | Tamaño |
 |---|---|---|
-| Paletas (seed) | `colorpalettes.json` | ~17.390 paletas |
+| Paletas (seed) | `databases/colorpalettes.json` | ~17.390 paletas |
 | Diccionario de nombres de color | `layers/palette/utils/color-names-data.json` | 14.394 nombres |
 | Guías Pantone | `layers/all-colors/utils/pantone-data.json` | 3.219 muestras (Solid Coated, Pastels & Neons, Metallics) |
 | Colores de marca | `layers/brand-colors/utils/brand-colors-data.json` | 910 marcas / 2.754 colores |

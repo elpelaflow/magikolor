@@ -32,7 +32,7 @@ const DB_NAME = process.env.MONGO_DB ?? 'magikolor';
 const COLL = process.env.PALETTE_COLLECTION ?? 'palettes';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const JSON_PATH = process.env.PALETTES_FILE
-  ?? join(HERE, '..', 'colorpalettes.json');
+  ?? join(HERE, '..', 'databases', 'colorpalettes.json');
 
 // 17/10/2024 03:55:12.549 UTC  (valor de aiNamesStartDateMs en layers/palette/nuxt.config.ts)
 const AI_NAMES_START_MS = 1729116912549;
