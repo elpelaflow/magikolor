@@ -10,7 +10,6 @@ dist
 
 # Local data dumps (not part of the source)
 colornames.txt
-colordatabase.json
 colors_and_palettes.csv
 
 # Harness de tests — artefactos generados en runtime
