@@ -2,6 +2,17 @@
   "name": "magikolor",
   "private": true,
   "type": "module",
+  "description": "Magikolor is a free and open-source AI color palette generator with a suite of tools for everything color-related.",
+  "homepage": "https://magikolor.app",
+  "license": "MIT",
+  "author": "elpelaflow",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elpelaflow/magikolor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/elpelaflow/magikolor/issues"
+  },
   "scripts": {
     "build": "nuxt build",
     "dev": "node scripts/check-dev-port.mjs && nuxt dev --port 3005",
