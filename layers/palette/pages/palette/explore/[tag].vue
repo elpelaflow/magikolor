@@ -14,7 +14,7 @@
 
       <!-- count of palettes generated -->
       <p class="italic text-sm">
-        {{ count.toLocaleString() }} {{ tag }} color palettes generated
+        {{ $t('explore.countWithTag', { count: count.toLocaleString(), tag }) }}
       </p>
     </div>
 
@@ -58,7 +58,7 @@
       <div class="mt-8 text-center">
         <UButton
           v-if="palettes.length"
-          :label="hasNextPage ? 'Load more...' : 'No more results'"
+          :label="hasNextPage ? $t('explore.loadMore') : $t('explore.noMore')"
           :disabled="!hasNextPage"
           :loading="isFetching"
           @click="fetchNextPage"

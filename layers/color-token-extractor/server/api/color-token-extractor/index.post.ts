@@ -53,7 +53,7 @@ async function fetchText(url: URL, maxBytes: number, timeoutMs: number): Promise
       redirect: 'follow',
       signal: controller.signal,
       headers: {
-        'user-agent': 'Mozilla/5.0 (compatible; MagicolorColorTokenExtractor/1.0; +https://magicolor.app)',
+        'user-agent': 'Mozilla/5.0 (compatible; MagikolorColorTokenExtractor/1.0; +https://magikolor.app)',
         'accept': 'text/html,text/css,*/*;q=0.8'
       }
     });

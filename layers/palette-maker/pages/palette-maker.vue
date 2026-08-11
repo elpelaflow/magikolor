@@ -130,13 +130,31 @@
       </div>
     </ClientOnly>
 
+    <!-- Color Blindness Simulator (ClientOnly: los colores son aleatorios por
+         sesión, así que SSR y cliente nunca coincidirían → skeleton) -->
+    <ClientOnly>
+      <template #fallback>
+        <div class="border border-gray-200 rounded-2xl p-4 mt-8 space-y-4">
+          <USkeleton class="h-6 w-48" />
+          <USkeleton class="h-10 w-full" />
+        </div>
+      </template>
+
+      <div class="border border-gray-200 rounded-2xl p-4 mt-8">
+        <h2>
+          {{ $t('colorBlind.title') }}
+        </h2>
+        <ColorBlindSimulator :colors="colors.map((c) => c.hex)" />
+      </div>
+    </ClientOnly>
+
     <!-- colores guardados -->
     <ClientOnly>
       <section
         v-if="savedColors.length"
         class="mt-8"
       >
-        <h2 class="text-lg font-semibold mb-3">
+        <h2>
           {{ $t('paletteMaker.savedColorsTitle') }}
         </h2>
         <ul class="flex flex-wrap gap-3">

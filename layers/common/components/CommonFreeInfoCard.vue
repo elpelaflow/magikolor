@@ -2,7 +2,7 @@
   <UCard>
     <template #header>
       <p class="font-semibold">
-        Magicolor is now 100% free to use!
+        Magikolor is now 100% free to use!
       </p>
     </template>
     <p class="mb-4">
@@ -12,8 +12,8 @@
       If you were a previous subscriber, we've canceled your subscription so there will be no more payments. If you
       require a prorated refund please reach out to us on <a
         class="text-primary underline"
-        href="mailto:hello@magicolor.app"
-      >hello@magicolor.app</a>.
+        href="mailto:hello@magikolor.app"
+      >hello@magikolor.app</a>.
     </p>
     <p>
       We're going to be making some improvements over the coming future, as well as adding other

@@ -131,7 +131,7 @@
           <CommonSocialShareButtons
             type="text"
             orientation="horizontal"
-            :text="`${t('palette.shareText')} ${data.text ?? ''} with Magicolor AI!`"
+            :text="`${t('palette.shareText')} ${data.text ?? ''} with Magikolor AI!`"
           />
         </div>
 
@@ -148,7 +148,7 @@
 
         <!-- What You Can Do -->
         <div class="mt-12 space-y-4">
-          <h2 class="text-xl font-semibold">
+          <h2>
             {{ $t('palette.whatYouCanDoTitle') }}
           </h2>
           <p class="text-sm text-gray-600">{{ $t('palette.whatYouCanDoIntro') }}</p>
@@ -164,7 +164,7 @@
 
         <!-- Preview UI Components -->
         <div class="mt-12 space-y-6">
-          <h2 class="text-xl font-semibold">
+          <h2>
             {{ $t('palette.previewTitle') }}
           </h2>
           <h3 class="text-sm font-medium text-gray-500">
@@ -384,14 +384,22 @@
             <CommonSocialShareButtons
               type="text"
               orientation="horizontal"
-              :text="`${t('palette.shareText')} ${data.text ?? ''} with Magicolor AI!`"
+              :text="`${t('palette.shareText')} ${data.text ?? ''} with Magikolor AI!`"
             />
           </div>
         </div>
 
+        <!-- Color Blindness Simulator -->
+        <div class="mt-12 space-y-4">
+          <h2>
+            {{ $t('colorBlind.title') }}
+          </h2>
+          <ColorBlindSimulator :colors="arrangedColors" />
+        </div>
+
         <!-- Download PNG -->
         <div class="mt-12 space-y-4">
-          <h2 class="text-xl font-semibold">
+          <h2>
             {{ $t('palette.downloadTitle') }} {{ data.text }} {{ $t('palette.downloadSuffix') }}
           </h2>
           <UButton
@@ -407,7 +415,7 @@
 
         <!-- CSS Code -->
         <div class="mt-12 space-y-4">
-          <h2 class="text-xl font-semibold">
+          <h2>
             {{ $t('palette.cssTitle') }} {{ data.text }} {{ $t('palette.cssSuffix') }}
           </h2>
           <div class="space-y-3">
@@ -426,7 +434,7 @@
 
         <!-- Gradient CSS -->
         <div class="mt-12 space-y-4">
-          <h2 class="text-xl font-semibold">
+          <h2>
             {{ $t('palette.gradientTitle') }} {{ data.text }} {{ $t('palette.gradientSuffix') }}
           </h2>
           <div class="space-y-3">
@@ -551,10 +559,10 @@ function resetArrange(): void {
 function onClickExample(prompt: string): void {
   create({ prompt }, {
     onError: (err) => {
-      notifications.addError(err.message ?? 'Error creating palette.');
+      notifications.addError(err.message ?? t('palette.createError'));
     },
     onSuccess: (value) => {
-      notifications.addSuccess(`Successfully created ${prompt} palette.`);
+      notifications.addSuccess(t('palette.createdSuccess', { prompt }));
       void navigateTo(localePath(`/palette/${value.id}`));
     }
   });

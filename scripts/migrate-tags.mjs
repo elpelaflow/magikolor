@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Migracion de tags en db.palettes (container magicolor_database).
+ * Migracion de tags en db.palettes (container magikolor_database).
  *
  * Uso (desde la raiz del repo):
  *   node scripts/migrate-tags.mjs
@@ -19,18 +19,18 @@
 import { MongoClient } from 'mongodb';
 
 const URI = process.env.MONGO_URI
-  ?? 'mongodb://magicolor:secret@localhost:27018/magicolor?authSource=admin';
+  ?? 'mongodb://magikolor:secret@localhost:27018/magikolor?authSource=admin';
 
 function die(msg) { console.error('\n[ERROR] ' + msg); process.exit(1); }
 
 async function main() {
-  console.log('--- Migrador de tags Magicolor ---');
+  console.log('--- Migrador de tags Magikolor ---');
   console.log(`MONGO : ${URI}\n`);
 
   const client = new MongoClient(URI, { serverSelectionTimeoutMS: 10000 });
   try {
     await client.connect();
-    const col = client.db('magicolor').collection('palettes');
+    const col = client.db('magikolor').collection('palettes');
 
     const before = await col.aggregate([
       { $unwind: '$tags' },

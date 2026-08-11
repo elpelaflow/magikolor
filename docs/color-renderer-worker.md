@@ -22,7 +22,7 @@ página real en un Chromium headless, espera a que corra el JS y devuelve:
   Navegador (usuario)
        │  POST /api/color-token-extractor/runtime
        ▼
-  Magicolor (Nuxt/Nitro)  ── proxy HTTP (RENDERER_URL, timeout 30s) ──►  WORKER color-renderer (puerto 3100)
+  Magikolor (Nuxt/Nitro)  ── proxy HTTP (RENDERER_URL, timeout 30s) ──►  WORKER color-renderer (puerto 3100)
                                                                           Node 22 + Playwright (Chromium headless)
                                                                           ┌──────────────────────────────────┐
                                                                           │ Browser (1 solo, launch-once)    │
@@ -37,7 +37,7 @@ página real en un Chromium headless, espera a que corra el JS y devuelve:
   Un crash de Chromium nunca afecta a la app, y el peso de los binarios (imagen ~3.3 GB)
   no ensucia la imagen principal.
 - **On-demand**: solo se ejecuta cuando alguien usa la tool; las páginas normales de
-  Magicolor nunca lo tocan.
+  Magikolor nunca lo tocan.
 
 ## 2. Componentes
 
@@ -187,7 +187,7 @@ hasDarkMode: true | light: 23 colores | dark: 24 colores | 2.9 s total
 ```yaml
 # compose.yml
 renderer:
-  container_name: magicolor_renderer
+  container_name: magikolor_renderer
   build: ./workers/color-renderer
   environment:
     PORT: "3100"

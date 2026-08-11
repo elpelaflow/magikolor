@@ -31,7 +31,7 @@ export interface SavedGradient {
 
 export const MIN_STOPS = 2;
 export const MAX_STOPS = 8;
-export const STORAGE_KEY = 'magicolor:gradients';
+export const STORAGE_KEY = 'magikolor:gradients';
 
 export const GRADIENT_TYPES: GradientType[] = ['linear', 'radial', 'conic'];
 
@@ -87,7 +87,7 @@ export function buildCssDeclaration(config: GradientConfig): string {
 /** Archivo CSS listo para producción. */
 export function buildCssFile(config: GradientConfig): string {
   return [
-    '/* Generated with Magicolor Gradient Generator */',
+    '/* Generated with Magikolor Gradient Generator */',
     '.gradient {',
     `  ${buildCssDeclaration(config)}`,
     '}',

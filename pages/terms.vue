@@ -5,9 +5,9 @@
     </p>
     <p>The English version of the Terms of Use is currently under preparation. Therefore, the Japanese version of the Terms of Use will take precedence over the English version.</p>
 
-    <p>These terms and conditions of use (hereinafter referred to as the "Terms of Use") set forth the terms and conditions of all services provided by Magicolor (hereinafter referred to as the "Organization") under the Magicolor service name (hereinafter referred to as the "Service") and the rights and obligations between the Organization and all registered users. In order to use the Services, you must read and agree to these Terms of Use in their entirety.</p>
+    <p>These terms and conditions of use (hereinafter referred to as the "Terms of Use") set forth the terms and conditions of all services provided by Magikolor (hereinafter referred to as the "Organization") under the Magikolor service name (hereinafter referred to as the "Service") and the rights and obligations between the Organization and all registered users. In order to use the Services, you must read and agree to these Terms of Use in their entirety.</p>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 1 (Application)
     </h2>
     <ol class="list-decimal ml-5">
@@ -16,7 +16,7 @@
       <li>If there is any discrepancy between the contents of this Agreement and the rules and other descriptions of the Service outside of this Agreement, the provisions of this Agreement shall take precedence over such discrepancy.</li>
     </ol>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 2 (Definitions)
     </h2>
     <p>The following terms used in this Agreement shall have the meanings set forth below.</p>
@@ -27,7 +27,7 @@
       <li>"Registered User" means an individual or legal entity that has registered as a user of the Service in accordance with Article 3 (Registration).</li>
     </ul>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 3 (Registration)
     </h2>
     <ol class="list-decimal ml-5">
@@ -37,12 +37,12 @@
       <li>The Organization may refuse registration or re-registration for reasons including false information or other criteria outlined by the Organization.</li>
     </ol>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 4 (Change of registered matters)
     </h2>
     <p>Registered Users shall notify the Organization without delay of any changes to their registered information in the manner prescribed by the Organization.</p>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 5 (Management of Account)
     </h2>
     <ol class="list-decimal ml-5">
@@ -51,7 +51,7 @@
       <li>The Organization shall not be liable for any damage caused by inadequate management of personal identification information.</li>
     </ol>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 6 (Prohibited Matters)
     </h2>
     <p>In using the Service, Registered Users shall not engage in any of the following acts or acts that the Organization deems to fall under any of the following items:</p>
@@ -67,12 +67,12 @@
       <li>Any other actions deemed inappropriate by the Organization</li>
     </ul>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 7 (Suspension of the Service)
     </h2>
     <p>The Organization may suspend or discontinue the Service without prior notice in cases such as system maintenance, emergencies, or other circumstances as deemed necessary.</p>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 8 (Attribution of Rights)
     </h2>
     <ol class="list-decimal ml-5">
@@ -80,24 +80,24 @@
       <li>The Registered User grants the Organization a worldwide, non-exclusive, royalty-free license to use posted data.</li>
     </ol>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 9 (Termination of Registration)
     </h2>
     <ol class="list-decimal ml-5">
       <li>The Organization may terminate a user's registration if they violate the Terms of Use or other criteria outlined.</li>
     </ol>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 10 (Withdrawal from Membership)
     </h2>
     <p>Registered users may withdraw from the Service following the procedure prescribed by the Organization.</p>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 11 (Changes to the Service)
     </h2>
     <p>The Organization may change or terminate the Service at its discretion and will not be liable for any resulting damages.</p>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 12 (Disclaimer of Liability)
     </h2>
     <ol class="list-decimal ml-5">
@@ -105,37 +105,37 @@
       <li>In no event shall the Organization be liable for damages exceeding the amount paid by the Registered User in the last six months.</li>
     </ol>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 13 (Confidentiality)
     </h2>
     <p>Registered Users shall keep confidential any non-public information disclosed by the Organization in connection with the Service.</p>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 14 (Handling of User Information)
     </h2>
     <p>The handling of user information is governed by the privacy policy of the Service.</p>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 15 (Modification of Terms of Use)
     </h2>
     <p>The Organization may modify these Terms of Use as necessary. Continued use of the Service after any changes indicates agreement to the modified terms.</p>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 16 (Communication/Notice)
     </h2>
     <p>Communication from the Organization to the Registered User will be made via the contact information provided during registration.</p>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 17 (Transfer of Status)
     </h2>
     <p>Registered Users may not transfer their rights or obligations under the Service Usage Contract without prior consent from the Organization.</p>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 18 (Severability)
     </h2>
     <p>If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions will remain in effect.</p>
 
-    <h2 class="text-xl font-semibold">
+    <h2>
       Article 19 (Governing Law and Jurisdiction)
     </h2>
     <p>This Agreement shall be governed by the laws of Japan, with the district court having jurisdiction over the Organization's location serving as the exclusive court of first instance for any disputes.</p>
@@ -148,6 +148,6 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'Terms | Magicolor | AI Color Palette Generator'
+  title: 'Terms | Magikolor | AI Color Palette Generator'
 });
 </script>

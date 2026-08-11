@@ -9,9 +9,9 @@
         >
           <img
             width="128px"
-            height="20.4px"
-            src="/img/HorizontalLogo.svg"
-            alt="Magicolor - AI Color Palette generator"
+            height="auto"
+            src="/img/HorizontalLogo.png"
+            alt="Magikolor - AI Color Palette generator"
           >
         </NuxtLinkLocale>
 
@@ -32,6 +32,37 @@
               />
             </li>
           </ul>
+
+          <!-- explore popover -->
+          <UPopover
+            v-model:open="isExploreOpen"
+            mode="hover"
+          >
+            <UButton
+              variant="soft"
+              class="hover:text-primary font-semibold"
+              size="md"
+              icon="i-heroicons-chevron-down-16-solid"
+              trailing
+            >
+              {{ $t('nav.explore') }}
+            </UButton>
+
+            <template #panel>
+              <div class="p-2">
+                <UHeaderPopoverLinks
+                  :links="exploreLinks"
+                  :ui="{
+                    base: 'text-left',
+                    wrapper: 'grid gap-2 max-w-xs space-y-0 items-start justify-start text-left',
+                    icon: {
+                      base: 'text-primary w-4 h-4 mt-2'
+                    },
+                  }"
+                />
+              </div>
+            </template>
+          </UPopover>
 
           <!-- tools popover -->
           <UPopover
@@ -105,7 +136,7 @@
       <div class="flex items-center gap-2 sm:gap-4">
         <UButton
           icon="i-fa6-brands-github"
-          to="https://github.com/elpelaflow/magicolor"
+          to="https://github.com/elpelaflow/magikolor"
         />
 
         <!-- lang switcher-->
@@ -135,9 +166,9 @@
           >
             <img
               width="128px"
-              height="20.4px"
-              src="/img/HorizontalLogo.svg"
-              alt="Magicolor - AI Color Palette generator"
+              height="auto"
+              src="/img/HorizontalLogo.png"
+              alt="Magikolor - AI Color Palette generator"
             >
           </NuxtLinkLocale>
 
@@ -149,7 +180,7 @@
         </div>
 
         <!-- links -->
-        <UVerticalNavigation :links="[[...links],[...toolsLinks],[...utilsLinks]]" />
+        <UVerticalNavigation :links="[[...links],[...exploreLinks],[...toolsLinks],[...utilsLinks]]" />
       </div>
     </UModal>
   </nav>
@@ -160,6 +191,7 @@ const { t } = useI18n();
 const localePath = useLocalePath();
 
 const isOpen = ref(false);
+const isExploreOpen = ref(false);
 const isUtilsOpen = ref(false);
 
 const {
@@ -174,16 +206,39 @@ const links = computed(() => [
     to: localePath('/')
   },
   {
-    label: t('nav.explore'),
-    to: localePath('/palette/explore')
-  },
-  {
     label: t('nav.recent'),
     to: localePath('/recent')
   },
   {
     label: t('nav.favorites'),
     to: localePath('/favorites')
+  }
+]);
+
+const exploreLinks = computed(() => [
+  {
+    to: localePath('/palette/explore'),
+    label: t('nav.exploreColorPalettes'),
+    description: t('explore.seoDescription'),
+    icon: 'i-heroicons-swatch'
+  },
+  {
+    to: localePath('/explore/gradients'),
+    label: t('nav.exploreGradients'),
+    description: t('exploreGradients.seoDescription'),
+    icon: 'i-heroicons-bars-arrow-down'
+  },
+  {
+    to: localePath('/explore/colors'),
+    label: t('nav.exploreColors'),
+    description: t('exploreColors.seoDescription'),
+    icon: 'i-heroicons-circle-stack'
+  },
+  {
+    to: localePath('/explore/image-palettes'),
+    label: t('nav.exploreImagePalettes'),
+    description: t('exploreImagePalettes.seoDescription'),
+    icon: 'i-heroicons-photo'
   }
 ]);
 
@@ -236,6 +291,12 @@ const toolsLinks = computed(() => [{
   icon: 'i-heroicons-bars-arrow-down'
 },
 {
+  to: localePath('/gradient-palette'),
+  label: t('nav.gradientPalette'),
+  description: t('gradientPalette.seoDescription'),
+  icon: 'i-heroicons-swatch'
+},
+{
   to: localePath('/color-token-extractor'),
   label: t('nav.tokenExtractor'),
   description: t('tokenExtractor.seoDescription'),
@@ -246,10 +307,17 @@ const toolsLinks = computed(() => [{
   label: t('nav.paletteMaker'),
   description: t('paletteMaker.seoDescription'),
   icon: 'i-heroicons-swatch'
+},
+{
+  to: localePath('/mood-palette'),
+  label: t('nav.moodPalette'),
+  description: t('moodPalette.seoDescription'),
+  icon: 'i-heroicons-photo'
 }]);
 
 watch(useRoute(), () => {
   isOpen.value = false;
+  isExploreOpen.value = false;
   isUtilsOpen.value = false;
   closeModal();
 });

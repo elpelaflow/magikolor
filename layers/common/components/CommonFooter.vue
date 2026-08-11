@@ -96,7 +96,7 @@
       <div class="flex items-center gap-4 sm:justify-center flex-wrap">
         <!-- copyright label -->
         <p class="text-sm text-gray-400">
-          © 2024 Magicolor
+          © 2024 Magikolor
         </p>
 
         <!-- languages -->
@@ -139,8 +139,20 @@ const websiteLinks = computed(() => [
     to: localePath('/')
   },
   {
-    label: t('nav.explore'),
+    label: t('nav.exploreColorPalettes'),
     to: localePath('/palette/explore')
+  },
+  {
+    label: t('nav.exploreGradients'),
+    to: localePath('/explore/gradients')
+  },
+  {
+    label: t('nav.exploreColors'),
+    to: localePath('/explore/colors')
+  },
+  {
+    label: t('nav.exploreImagePalettes'),
+    to: localePath('/explore/image-palettes')
   },
   {
     label: t('nav.recent'),
@@ -193,6 +205,10 @@ const toolsLinks = computed(() => [{
   label: t('nav.gradientGenerator')
 },
 {
+  to: localePath('/gradient-palette'),
+  label: t('nav.gradientPalette')
+},
+{
   to: localePath('/color-token-extractor'),
   label: t('nav.tokenExtractor')
 },
@@ -213,6 +229,10 @@ const toolsLinks = computed(() => [{
   label: t('nav.paletteMaker')
 },
 {
+  to: localePath('/mood-palette'),
+  label: t('nav.moodPalette')
+},
+{
   to: localePath('/api'),
   label: t('nav.api')
 }]);
@@ -220,15 +240,15 @@ const toolsLinks = computed(() => [{
 const moreLinks = computed(() => [
   {
     label: t('nav.contact'),
-    to: 'mailto:hello@magicolor.app'
+    to: 'mailto:hello@magikolor.app'
   },
   {
     label: t('nav.suggestIdea'),
-    to: 'https://magicolor.canny.io'
+    to: 'https://magikolor.canny.io'
   },
   {
     label: 'GitHub',
-    to: 'https://github.com/elpelaflow/magicolor'
+    to: 'https://github.com/elpelaflow/magikolor'
   }
 ]);
 </script>

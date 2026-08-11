@@ -30,7 +30,7 @@
         v-if="savedPalettes.length"
         class="mb-10"
       >
-        <h2 class="text-lg font-semibold mb-3">
+        <h2>
           {{ $t('favorites.savedPalettesTitle') }}
         </h2>
         <ul class="flex flex-wrap gap-3">
@@ -71,12 +71,69 @@
         </ul>
       </section>
 
+      <!-- image palettes (Image Color Picker & Mood Palette, con la imagen) -->
+      <section
+        v-if="imagePalettes.length"
+        class="mb-10"
+      >
+        <h2>
+          {{ $t('favorites.imagePalettesTitle') }}
+        </h2>
+        <ul class="grid sm:grid-cols-3 gap-4">
+          <li
+            v-for="p in imagePalettes"
+            :key="p.id"
+            class="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm bg-white dark:bg-gray-900"
+          >
+            <div class="relative group">
+              <img
+                :src="p.image"
+                :alt="imagePaletteSourceLabel(p)"
+                class="w-full h-28 object-cover"
+                loading="lazy"
+              >
+              <span class="absolute bottom-1 left-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-black/50 text-white">
+                {{ imagePaletteSourceLabel(p) }}
+              </span>
+              <button
+                class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded bg-black/40 text-white"
+                :title="$t('paletteMaker.remove')"
+                :aria-label="$t('paletteMaker.remove')"
+                @click="onRemoveImagePalette(p)"
+              >
+                <UIcon name="i-heroicons-x-mark" class="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div class="flex h-9">
+              <div
+                v-for="(hex, i) in p.colors"
+                :key="`${p.id}-${i}`"
+                class="flex-1"
+                :style="{ backgroundColor: hex }"
+                :title="hex"
+              />
+            </div>
+            <div class="p-2 flex items-center justify-between">
+              <span class="text-xs text-gray-500 font-mono">{{ p.colors.length }} {{ $t('favorites.savedPalettesCount') }}</span>
+              <UButton
+                size="xs"
+                variant="soft"
+                color="primary"
+                icon="i-heroicons-clipboard"
+                :label="$t('paletteMaker.copyHex')"
+                @click="onCopyImagePalette(p)"
+              />
+            </div>
+          </li>
+        </ul>
+      </section>
+
       <!-- saved colors (from Palette Maker ♥) -->
       <section
         v-if="savedColors.length"
         class="mb-10"
       >
-        <h2 class="text-lg font-semibold mb-3">
+        <h2>
           {{ $t('favorites.savedColorsTitle') }}
         </h2>
         <ul class="flex flex-wrap gap-3">
@@ -138,28 +195,19 @@
         </li>
       </ul>
 
-      <div
+      <CommonEmptyState
         v-else
-        class="text-center py-16"
+        icon="i-heroicons-heart"
+        :title="$t('favorites.emptyTitle')"
+        :description="$t('favorites.emptyDescription')"
       >
-        <UIcon
-          name="i-heroicons-heart"
-          class="w-12 h-12 mx-auto text-gray-300 mb-4"
-        />
-        <p class="text-lg font-semibold mb-2">
-          {{ $t('favorites.emptyTitle') }}
-        </p>
-        <p class="text-gray-500 max-w-sm mx-auto">
-          {{ $t('favorites.emptyDescription') }}
-        </p>
         <UButton
-          class="mt-6"
           size="xl"
           color="primary"
           :label="$t('explore.title')"
           :to="localePath('/palette/explore')"
         />
-      </div>
+      </CommonEmptyState>
     </ClientOnly>
   </div>
 </template>
@@ -168,12 +216,15 @@
 import { useClipboard } from '@vueuse/core';
 import type { SavedColor } from '~/layers/common/composables/useColorFavorites';
 import type { SavedPalette } from '~/layers/common/composables/usePaletteFavorites';
+import type { SavedImagePalette } from '~/layers/common/composables/useImagePalettes';
+import { useImagePalettes } from '~/layers/common/composables/useImagePalettes';
 
 const { t } = useI18n();
 const localePath = useLocalePath();
 const { favorites } = useFavorites();
 const { savedColors, removeColor: removeSavedColor } = useColorFavorites();
 const { savedPalettes, removePalette } = usePaletteFavorites();
+const { saved: imagePalettes, remove: removeImagePalette } = useImagePalettes();
 const { addSuccess } = useNotifications();
 const { copy } = useClipboard();
 
@@ -193,6 +244,19 @@ function onRemoveSavedPalette(p: SavedPalette): void {
 function onCopySavedPalette(p: SavedPalette): void {
   copy(p.colors.join(', '));
   addSuccess(t('paletteMaker.copied'));
+}
+
+function onRemoveImagePalette(p: SavedImagePalette): void {
+  removeImagePalette(p.id);
+}
+
+function onCopyImagePalette(p: SavedImagePalette): void {
+  copy(p.colors.join(', '));
+  addSuccess(t('paletteMaker.copied'));
+}
+
+function imagePaletteSourceLabel(p: SavedImagePalette): string {
+  return p.source === 'mood-palette' ? t('moodPalette.title') : t('imageColorPicker.title');
 }
 
 useSeoMeta({

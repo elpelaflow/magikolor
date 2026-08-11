@@ -6,6 +6,7 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/img/favicon.ico' },
         { rel: 'icon', type: 'image/svg+xml', href: '/img/icon.svg' },
+        { rel: 'icon', type: 'image/gif', href: '/img/favicon.gif' },
         { rel: 'apple-touch-icon', href: '/img/apple-touch-icon.png' },
         { rel: 'manifest', href: '/manifest.webmanifest' }
       ],
@@ -14,7 +15,7 @@ export default defineNuxtConfig({
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'googlebot', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' },
         { name: 'bingbot', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' },
-        { property: 'og:site_name', content: 'Magicolor' }
+        { property: 'og:site_name', content: 'Magikolor' }
       ]
     }
   },

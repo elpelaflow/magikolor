@@ -27,7 +27,7 @@ import { join } from 'node:path';
 const REPO_URL = 'https://github.com/pickcoloronline/brands/archive/refs/heads/main.tar.gz';
 const OUT_PATH = 'layers/brand-colors/utils/brand-colors-data.json';
 
-const WORKDIR = join(tmpdir(), `magicolor-brands-${Date.now()}`);
+const WORKDIR = join(tmpdir(), `magikolor-brands-${Date.now()}`);
 mkdirSync(WORKDIR, { recursive: true });
 
 /** Expande un hex de 3 dígitos a 6; devuelve null si no es parseable. */

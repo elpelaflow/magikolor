@@ -7,15 +7,8 @@ export class OgService {
   constructor(private readonly paletteService: PaletteService) {}
 
   private async loadLogo(): Promise<string> {
-    return await new Promise((resolve, reject) => {
-      fs.readFile(path.resolve('public/img/HorizontalLogo.svg'), 'utf8', (err, data) => {
-        if (err !== null) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
-    });
+    const data = await fs.promises.readFile(path.resolve('public/img/HorizontalLogo.png'));
+    return `data:image/png;base64,${data.toString('base64')}`;
   }
 
   private async generateSVG(colors: string[], prompt: string): Promise<string> {
@@ -47,9 +40,7 @@ export class OgService {
         <text x="50%" y="54%" font-size="56" font-weight="bold" font-family="-apple-system, BlinkMacSystemFont, 'Avenir Next', Avenir, 'Nimbus Sans L', Roboto, Noto, 'Segoe UI', Arial, Helvetica, 'Helvetica Neue', sans-serif" fill="#4E5460" text-anchor="middle" dy=".35em">${prompt}</text>
 
         <!-- Inline Logo -->
-        <g transform="translate(${width / 2 - 125}, ${cardY + 30})">
-          ${logoSvg}
-        </g>
+        <image href="${logoSvg}" x="${width / 2 - 125}" y="${cardY + 30}" width="250" height="51.2" />
       </svg>
     `;
 
@@ -109,9 +100,7 @@ export class OgService {
         ${svgPalettes.join('')}
         <rect x="${cardX}" y="${cardY}" rx="24" ry="24" width="${cardWidth}" height="${cardHeight}" fill="#fff" />
         <text x="50%" y="54%" font-size="56" font-weight="bold" font-family="-apple-system, BlinkMacSystemFont, 'Avenir Next', Avenir, 'Nimbus Sans L', Roboto, Noto, 'Segoe UI', Arial, Helvetica, 'Helvetica Neue', sans-serif" fill="#4E5460" text-anchor="middle" dy=".35em">${prompt}</text>
-        <g transform="translate(${width / 2 - 125}, ${cardY + 30})">
-          ${logoSvg}
-        </g>
+        <image href="${logoSvg}" x="${width / 2 - 125}" y="${cardY + 30}" width="250" height="51.2" />
       </svg>
     `;
 

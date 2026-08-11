@@ -23,6 +23,16 @@ export enum PlausibleEventName {
   COLOR_PALETTE_CREATOR_ASE_DOWNLOADED = 'color-palette-creator:ase:downloaded',
   COLOR_PALETTE_CREATOR_PDF_EXPORTED = 'color-palette-creator:pdf:exported',
 
+  GRADIENT_PALETTE_COLOR_COPIED = 'gradient-palette:color:copied',
+  GRADIENT_PALETTE_PALETTE_COPIED = 'gradient-palette:palette:copied',
+  GRADIENT_PALETTE_CSS_VARIABLES_COPIED = 'gradient-palette:css-variables:copied',
+  GRADIENT_PALETTE_CSS_GRADIENT_COPIED = 'gradient-palette:css-gradient:copied',
+  GRADIENT_PALETTE_SAVED = 'gradient-palette:saved',
+  GRADIENT_PALETTE_UNSAVED = 'gradient-palette:unsaved',
+  GRADIENT_PALETTE_PNG_DOWNLOADED = 'gradient-palette:png:downloaded',
+  GRADIENT_PALETTE_JSON_DOWNLOADED = 'gradient-palette:json:downloaded',
+  GRADIENT_PALETTE_ASE_DOWNLOADED = 'gradient-palette:ase:downloaded',
+
   GRADIENT_GENERATOR_STOP_ADDED = 'gradient-generator:stop-added',
   GRADIENT_GENERATOR_COPY_CSS = 'gradient-generator:copied:css',
   GRADIENT_GENERATOR_SAVED = 'gradient-generator:saved',
@@ -57,6 +67,17 @@ export enum PlausibleEventName {
   BRAND_COLORS_COPIED = 'brand-colors:copied',
   BRAND_COLORS_COPY_ALL = 'brand-colors:copied:all',
   BRAND_COLORS_BRAND_SITE_OPENED = 'brand-colors:brand-site:opened',
+
+  MOOD_PALETTE_GENERATED = 'mood-palette:generated',
+  MOOD_PALETTE_COLOR_COPIED = 'mood-palette:color:copied',
+  MOOD_PALETTE_COLLAGE_DOWNLOADED = 'mood-palette:collage:downloaded',
+  MOOD_PALETTE_PDF_EXPORTED = 'mood-palette:pdf:exported',
+  MOOD_PALETTE_CARD_DOWNLOADED = 'mood-palette:card:downloaded',
+
+  IMAGE_PALETTE_SAVED = 'image-palette:saved',
+  IMAGE_PALETTE_REMOVED = 'image-palette:removed',
+
+  COLOR_BLIND_SIMULATED = 'color-blind:simulated',
 
   PALETTE_MAKER_GENERATED = 'palette-maker:generated',
   PALETTE_MAKER_STOP_ADDED = 'palette-maker:stop-added',

@@ -1,8 +1,14 @@
 <template>
   <div>
-    <p class="text-lg font-bold mb-4">
-      {{ $t('recent.topLabel') }}
-    </p>
+    <!-- header -->
+    <div class="mb-8">
+      <h1>
+        {{ $t('recent.title') }}
+      </h1>
+      <p class="text-xl font-medium mb-4 max-w-xl">
+        {{ $t('recent.seoDescription') }}
+      </p>
+    </div>
     <ul
       v-if="session.size"
       class="grid sm:grid-cols-3 gap-4"
@@ -20,9 +26,11 @@
       </li>
     </ul>
 
-    <p v-else>
-      {{ $t('recent.noneFound') }}
-    </p>
+    <CommonEmptyState
+      v-else
+      icon="i-heroicons-clock"
+      :title="$t('recent.noneFound')"
+    />
   </div>
 </template>
 

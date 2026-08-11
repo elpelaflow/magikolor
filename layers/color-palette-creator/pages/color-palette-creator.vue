@@ -140,6 +140,22 @@
       />
     </div>
 
+    <!-- Color Blindness Simulator -->
+    <div class="border border-gray-200 rounded-2xl p-4 mb-6">
+      <div class="flex items-center justify-between gap-2 flex-wrap mb-4">
+        <h2 class="mb-0">
+          {{ $t('colorBlind.title') }}
+        </h2>
+        <USelect
+          v-model="simulatedType"
+          size="sm"
+          :options="simulateOptions"
+          class="w-48"
+        />
+      </div>
+      <ColorBlindSimulator :colors="displayed[simulatedType]" />
+    </div>
+
     <!-- palettes grid -->
     <div class="grid gap-6">
       <div
@@ -215,6 +231,15 @@ import { getContrastTextColor } from '~/layers/all-colors/utils/color-formats.ut
 const STYLES: PaletteStyle[] = ['square', 'triangle', 'circle', 'diamond'];
 const MODIFIER_KEYS = ['sine', 'wave', 'zap', 'block'] as const;
 
+const simulatedType = ref<PaletteType>(PALETTE_TYPES[0]);
+
+const simulateOptions = computed(() =>
+  PALETTE_TYPES.map(type => ({
+    label: t(`colorPaletteCreator.types.${type}`),
+    value: type
+  }))
+);
+
 const { t } = useI18n();
 const notifications = useNotifications();
 const { copy } = useClipboard();
@@ -283,7 +308,7 @@ function rowsForExport(): PaletteRow[] {
   }));
 }
 
-const fileStem = computed(() => `magicolor-palette-${state.baseHex.replace('#', '')}`);
+const fileStem = computed(() => `magikolor-palette-${state.baseHex.replace('#', '')}`);
 
 function onExportPng(): void {
   const dataUrl = renderPalettePng(rowsForExport());

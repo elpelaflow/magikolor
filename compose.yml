@@ -1,9 +1,9 @@
 services:
   database:
-    container_name: magicolor_database
+    container_name: magikolor_database
     image: mongo:7.0
     environment:
-      MONGO_INITDB_ROOT_USERNAME: magicolor
+      MONGO_INITDB_ROOT_USERNAME: magikolor
       MONGO_INITDB_ROOT_PASSWORD: secret
     ports:
       - "27018:27017"
@@ -12,7 +12,7 @@ services:
   # Worker de render (Playwright headless) para el Color Token Extractor Fase 2.
   # La app le delega via RENDERER_URL (default http://localhost:3100).
   renderer:
-    container_name: magicolor_renderer
+    container_name: magikolor_renderer
     build: ./workers/color-renderer
     environment:
       PORT: "3100"

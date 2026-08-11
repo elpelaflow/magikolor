@@ -1,10 +1,10 @@
 {
-  "name": "magicolor",
+  "name": "magikolor",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev --port 3005",
+    "dev": "node scripts/check-dev-port.mjs && nuxt dev --port 3005",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -14,9 +14,10 @@
     "test:unit": "node --experimental-strip-types scripts/unit-tests.mjs",
     "test:i18n": "node --experimental-strip-types scripts/check-i18n-keys.mjs",
     "test:favorites": "node --experimental-strip-types scripts/test-favorites.mjs",
+    "test:image-palettes": "node --experimental-strip-types scripts/test-image-palettes.mjs",
     "test:token-extractor": "node --experimental-strip-types scripts/test-token-extractor.mjs",
     "test:renderer": "node --experimental-strip-types scripts/test-color-renderer.mjs",
-    "test": "npm run test:parity && npm run test:unit && npm run test:i18n && npm run test:favorites && npm run test:token-extractor && npm run test:renderer"
+    "test": "npm run test:parity && npm run test:unit && npm run test:i18n && npm run test:favorites && npm run test:image-palettes && npm run test:token-extractor && npm run test:renderer"
   },
   "dependencies": {
     "@apideck/better-ajv-errors": "0.3.6",
@@ -31,7 +32,6 @@
     "@vueuse/core": "11.1.0",
     "ajv": "8.17.1",
     "ajv-formats": "3.0.1",
-    "color.js": "1.2.0",
     "got": "11.8.6",
     "mongodb": "6.9.0",
     "nuxt": "3.13.2",

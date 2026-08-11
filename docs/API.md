@@ -1,6 +1,6 @@
-# Magicolor API — Documentación de endpoints
+# Magikolor API — Documentación de endpoints
 
-Documentación de todos los endpoints del server de Magicolor. Corriendo localmente con `npm run dev` (por defecto en `http://localhost:3000`, en este doc asumimos `http://localhost:3011` cuando hay conflicto de puerto).
+Documentación de todos los endpoints del server de Magikolor. Corriendo localmente con `npm run dev` (por defecto en `http://localhost:3000`, en este doc asumimos `http://localhost:3011` cuando hay conflicto de puerto).
 
 Base URL: `http://localhost:3011/api`
 
@@ -427,7 +427,7 @@ detección de **dark mode** con dos renders (light + dark).
 - **Response 400/413/504:** errores útiles del worker propagados tal cual (URL inválida/SSRF, body grande, timeout de render).
 - **Response 502:** `"Rendered analysis unavailable. The renderer worker is offline."` si el worker no está levantado.
 - **Archivo:** `layers/color-token-extractor/server/api/color-token-extractor/runtime/index.post.ts`
-- **Dependencias:** worker Docker `magicolor-renderer` (Playwright, puerto 3100 por default, env `RENDERER_URL`). Sin el worker, este endpoint responde 502 — la Fase 1 sigue funcionando sola.
+- **Dependencias:** worker Docker `magikolor-renderer` (Playwright, puerto 3100 por default, env `RENDERER_URL`). Sin el worker, este endpoint responde 502 — la Fase 1 sigue funcionando sola.
 
 ---
 
@@ -497,11 +497,11 @@ Por default el server escucha en `http://localhost:3000`. Si el puerto está ocu
 
 ## Notas importantes
 
-1. **Sin autenticación local** — el repo no implementa ningún middleware de auth. Todos los endpoints son públicos. En el sitio público `api.magicolor.app` sí piden un token de "desktop client" (401), pero eso es específico del deployment del autor, no del código del repo.
+1. **Sin autenticación local** — el repo no implementa ningún middleware de auth. Todos los endpoints son públicos. En el sitio público `api.magikolor.app` sí piden un token de "desktop client" (401), pero eso es específico del deployment del autor, no del código del repo.
 
 2. **Requiere `OPENAI_API_KEY` para IA** — solo `/palette/create` y `/palette/clone` llaman a OpenAI. Los demás endpoints funcionan sin la key.
 
-3. **Mongo URL configurable** — viene de `useRuntimeConfig().mongo.url` (variable `MONGO_URL`). Default: `mongodb://magicolor:secret@localhost:27018/magicolor?authSource=admin` (levantado por `compose.yml`).
+3. **Mongo URL configurable** — viene de `useRuntimeConfig().mongo.url` (variable `MONGO_URL`). Default: `mongodb://magikolor:secret@localhost:27018/magikolor?authSource=admin` (levantado por `compose.yml`).
 
 4. **Bug conocido en Windows + Nitro 2.9.7** — no importar archivos `.js` sin extensión desde el server side con path absoluto. El handler original `contrast-checker` usaba `ntc.rgb()` (que es `.js`); los endpoints nuevos usan solo utilidades `.ts` para evitar este issue.
 

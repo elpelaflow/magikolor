@@ -272,7 +272,7 @@ function main() {
   readFile(src)
     .then(async (buf) => {
       const book = decodeAcb(buf);
-      log('--- Decodificador .acb Magicolor ---');
+      log('--- Decodificador .acb Magikolor ---');
       log(`Archivo : ${src}`);
       log(`Titulo  : ${book.title}`);
       log(`Color   : ${book.colorSpace}${book.isSpot === null ? '' : book.isSpot ? ' (Spot)' : ' (Process)'}`);

@@ -28,3 +28,29 @@ export async function getImageBase64(url: string): Promise<string | null> {
     return null;
   }
 }
+
+interface ExtractedPaletteEntry {
+  hex: string
+  prevalence: number
+}
+
+/**
+ * Extrae la paleta dominante de una imagen vía el endpoint server-side
+ * (sharp), que es robusto a formatos y no depende del canvas del navegador.
+ * Devuelve los hex normalizados a minúsculas (ej. #ff0000) o null si falla.
+ */
+export async function extractPaletteFromImage(dataUrl: string): Promise<string[] | null> {
+  try {
+    const response = await $fetch<{ palette: ExtractedPaletteEntry[] }>('/api/image-color-picker', {
+      method: 'POST',
+      body: { image: dataUrl, count: 5 }
+    });
+
+    const hexes = (response.palette ?? []).map(entry => entry.hex.toLowerCase());
+    return hexes.length > 0 ? hexes : null;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[image-color-picker] extractPaletteFromImage failed:', error);
+    return null;
+  }
+}

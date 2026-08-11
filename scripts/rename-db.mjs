@@ -1,28 +1,32 @@
 #!/usr/bin/env node
 /**
- * Migra la base local de `colormagic` -> `magicolor` (renameCollection).
+ * Migra la base local de `magicolor` -> `magikolor` (renameCollection).
  *
- * Contexto: el repo fue rebrandead a Magicolor (container `magicolor_database`,
- * user `magicolor`, db `magicolor`), pero la DB local existente se llama
- * `colormagic` con el user root `colormagic:secret`.
+ * Contexto: el repo pasó por dos rebrands: `colormagic` -> `magicolor` y ahora
+ * `magicolor` -> `magikolor`. La DB local existente se llama `magicolor` con
+ * el user root `magicolor:secret` (o `colormagic:secret` si nunca se migró
+ * del primer rebrand). Este script la lleva a `magikolor` y crea/actualiza el
+ * user root `magikolor`.
  *
  * Uso (desde la raiz del repo):
  *   node scripts/rename-db.mjs              # renombra db + asegura user nuevo
  *   node scripts/rename-db.mjs --dry-run    # solo muestra que haria
- *   node scripts/rename-db.mjs --drop-old-user  # ademas borra el user colormagic
+ *   node scripts/rename-db.mjs --drop-old-user  # ademas borra el user magicolor
  *   node scripts/rename-db.mjs --uri mongodb://user:pass@host:27018/admin?authSource=admin
  *   MONGO_URI=... node scripts/rename-db.mjs   # o por env (patron de scripts hermanos)
  *
  * Que hace:
  *   1) Conecta a la instancia Mongo local (prueba MONGO_URI / --uri, luego
- *      credenciales NUEVAS y VIEJAS, para funcionar con el container ya
- *      recreado o no).
- *   2) Asegura el user root `magicolor` (password `secret` o MONGO_PASSWORD)
+ *      credenciales NUEVAS, del rebrand anterior y VIEJAS, para funcionar con
+ *      el container ya recreado o no).
+ *   2) Asegura el user root `magikolor` (password `secret` o MONGO_PASSWORD)
  *      en `admin` — SIEMPRE, incluso si la db ya fue migrada (idempotente).
- *   3) Si la db `colormagic` existe, renombra TODAS sus collections a
- *      `magicolor.<collection>` (Mongo crea la db destino implicitamente).
- *   4) Opcional (`--drop-old-user`): borra el user viejo `colormagic`.
- *   5) Verifica: listado de collections en `magicolor` + conteo de docs.
+ *   3) Si la db `magicolor` existe, renombra TODAS sus collections a
+ *      `magikolor.<collection>` (Mongo crea la db destino implicitamente).
+ *      Si todavía existe `colormagic` (primer rebrand sin migrar), primero la
+ *      lleva a `magikolor` también.
+ *   4) Opcional (`--drop-old-user`): borra los users viejos.
+ *   5) Verifica: listado de collections en `magikolor` + conteo de docs.
  *
  * Idempotente: si ya migraste y lo corres de nuevo no rompe nada (y se puede
  * usar para reparar una migración a medias: p.ej. collections renombradas
@@ -30,22 +34,24 @@
  *
  * IMPORTANTE — recrear el container DESPUES:
  *   Al correr `docker compose up -d` con el compose nuevo (container
- *   `magicolor_database`), Docker preserva el volumen y los DATOS, pero el
+ *   `magikolor_database`), Docker preserva el volumen y los DATOS, pero el
  *   init de Mongo NO vuelve a correr (solo corre con volumen nuevo), asi que
- *   el user `magicolor` lo crea este script. Si en cambio arrancas desde cero
- *   (volumen nuevo), no hay nada que migrar: la db ya nace como `magicolor`.
+ *   el user `magikolor` lo crea este script. Si en cambio arrancas desde cero
+ *   (volumen nuevo), no hay nada que migrar: la db ya nace como `magikolor`.
  */
 
 import { MongoClient } from 'mongodb';
 
-const OLD_DB = 'colormagic';
-const NEW_DB = 'magicolor';
+const NEW_DB = 'magikolor';
+const OLD_DB = 'magicolor';
+const LEGACY_DB = 'colormagic';
 const PASSWORD = process.env.MONGO_PASSWORD ?? 'secret';
 
-// Orden de conexion: env explicito > --uri > credenciales nuevas > viejas.
+// Orden de conexion: env explicito > --uri > credenciales nuevas > rebrand anterior > viejas.
 const DEFAULT_URIS = [
   `mongodb://${NEW_DB}:${PASSWORD}@localhost:27018/admin?authSource=admin`,
-  `mongodb://${OLD_DB}:${PASSWORD}@localhost:27018/admin?authSource=admin`
+  `mongodb://${OLD_DB}:${PASSWORD}@localhost:27018/admin?authSource=admin`,
+  `mongodb://${LEGACY_DB}:${PASSWORD}@localhost:27018/admin?authSource=admin`
 ];
 
 function die(msg) { console.error('\n[ERROR] ' + msg); process.exit(1); }
@@ -97,11 +103,13 @@ async function ensureNewUser(admin) {
   }
 }
 
-async function dropOldUser(admin) {
-  const oldUsers = await admin.command({ usersInfo: { user: OLD_DB, db: 'admin' } });
-  const oldExists = (oldUsers.users ?? []).length > 0;
-  console.log(`\nUser viejo '${OLD_DB}': ${oldExists ? 'lo borro (--drop-old-user)' : 'no existe'}`);
-  if (oldExists && !DRY) await admin.command({ dropUser: OLD_DB });
+async function dropOldUsers(admin) {
+  for (const user of [OLD_DB, LEGACY_DB]) {
+    const oldUsers = await admin.command({ usersInfo: { user, db: 'admin' } });
+    const exists = (oldUsers.users ?? []).length > 0;
+    console.log(`\nUser viejo '${user}': ${exists ? 'lo borro (--drop-old-user)' : 'no existe'}`);
+    if (exists && !DRY) await admin.command({ dropUser: user });
+  }
 }
 
 async function listCollections(client, db) {
@@ -117,8 +125,22 @@ async function listCollections(client, db) {
   }
 }
 
+async function renameDbCollections(client, admin, fromDb, toDb) {
+  const colls = await client.db(fromDb).listCollections().toArray();
+  console.log(`\nDb '${fromDb}': ${colls.length} collection(s) a renombrar a '${toDb}'.`);
+  for (const c of colls) {
+    const from = `${fromDb}.${c.name}`;
+    const to = `${toDb}.${c.name}`;
+    const count = await client.db(fromDb).collection(c.name).countDocuments({});
+    console.log(`  ${from} (${count} docs) -> ${to}`);
+    if (!DRY) {
+      await admin.command({ renameCollection: from, to, dropTarget: false });
+    }
+  }
+}
+
 async function main() {
-  console.log('--- Migrador de DB Magicolor (colormagic -> magicolor) ---');
+  console.log('--- Migrador de DB Magikolor (magicolor -> magikolor) ---');
   console.log(`modo : ${DRY ? 'DRY-RUN (no escribe nada)' : 'EJECUTANDO'}\n`);
 
   const { client } = await connect();
@@ -128,10 +150,11 @@ async function main() {
     // 1) Asegurar user root nuevo — SIEMPRE (idempotente, repara migraciones parciales)
     await ensureNewUser(admin);
 
-    // 2) Chequear si la db vieja existe
+    // 2) Chequear que dbs viejas existen
     const dbs = (await admin.command({ listDatabases: 1 })).databases.map(d => d.name);
-    if (!dbs.includes(OLD_DB)) {
-      console.log(`\nLa db '${OLD_DB}' no existe.`);
+
+    if (!dbs.includes(OLD_DB) && !dbs.includes(LEGACY_DB)) {
+      console.log(`\nNi '${OLD_DB}' ni '${LEGACY_DB}' existen.`);
       if (dbs.includes(NEW_DB)) {
         console.log(`La db '${NEW_DB}' ya existe -> nada que migrar.`);
         await listCollections(client, NEW_DB);
@@ -139,24 +162,19 @@ async function main() {
         console.log(`La db '${NEW_DB}' tampoco existe. Parece una instancia nueva (sin datos).`);
       }
     } else {
-      // 3) Renombrar collections
-      const oldColls = await client.db(OLD_DB).listCollections().toArray();
-      console.log(`\nDb '${OLD_DB}': ${oldColls.length} collection(s) a renombrar.`);
-      for (const c of oldColls) {
-        const from = `${OLD_DB}.${c.name}`;
-        const to = `${NEW_DB}.${c.name}`;
-        const count = await client.db(OLD_DB).collection(c.name).countDocuments({});
-        console.log(`  ${from} (${count} docs) -> ${to}`);
-        if (!DRY) {
-          await admin.command({ renameCollection: from, to, dropTarget: false });
-        }
+      // 3) Migrar: primero el rebrand anterior (colormagic), luego el actual (magicolor)
+      if (dbs.includes(LEGACY_DB)) {
+        await renameDbCollections(client, admin, LEGACY_DB, NEW_DB);
+      }
+      if (dbs.includes(OLD_DB)) {
+        await renameDbCollections(client, admin, OLD_DB, NEW_DB);
       }
 
-      // 4) Borrar user viejo (opcional)
+      // 4) Borrar users viejos (opcional)
       if (DROP_OLD_USER) {
-        await dropOldUser(admin);
+        await dropOldUsers(admin);
       } else {
-        console.log(`\nUser viejo '${OLD_DB}' se conserva (usá --drop-old-user para borrarlo).`);
+        console.log(`\nUsers viejos '${OLD_DB}'/'${LEGACY_DB}' se conservan (usá --drop-old-user para borrarlos).`);
       }
 
       // 5) Verificacion
@@ -164,7 +182,7 @@ async function main() {
       await listCollections(client, NEW_DB);
     }
 
-    if (!DRY) console.log('\nListo. La app ya conecta con mongodb://magicolor:secret@localhost:27018/magicolor');
+    if (!DRY) console.log('\nListo. La app ya conecta con mongodb://magikolor:secret@localhost:27018/magikolor');
   } catch (e) {
     die(e.message);
   } finally {

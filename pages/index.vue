@@ -34,7 +34,7 @@
           />
           <UButton
             icon="i-heroicons-arrow-path"
-            aria-label="Generate Sample Prompt"
+            :aria-label="$t('generate.samplePrompt')"
             @click="generateSamplePrompt()"
           />
         </UButtonGroup>
@@ -52,8 +52,8 @@
       />
 
       <!-- count of palettes generated -->
-      <p class="italic text-xs text-center">
-        {{ count?.count.toLocaleString() ?? 0 }} color palettes generated since yesterday
+      <p class="italic text-sm text-center">
+        {{ $t('home.countSinceYesterday', { count: count?.count.toLocaleString() ?? 0 }) }}
       </p>
     </UForm>
 

@@ -14,7 +14,7 @@
     <!-- section: shades & tints -->
     <section>
       <div class="mb-6">
-        <h2 class="text-2xl font-semibold mb-1">
+        <h2>
           {{ $t('allColors.shadesTintsTitle') }}
         </h2>
         <p class="text-gray-500 max-w-xl">
@@ -184,7 +184,7 @@
       <!-- header -->
       <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div>
-          <h2 class="text-2xl font-semibold mb-1">
+          <h2>
             {{ $t('allColors.pantoneTitle') }}
           </h2>
           <p class="text-gray-500 max-w-xl">

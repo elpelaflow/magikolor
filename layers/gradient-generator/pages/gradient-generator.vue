@@ -202,12 +202,12 @@
         {{ $t('gradientGenerator.savedTitle') }}
       </p>
 
-      <p
+      <CommonEmptyState
         v-if="savedGradients.length === 0"
-        class="text-sm text-gray-500"
-      >
-        {{ $t('gradientGenerator.savedEmpty') }}
-      </p>
+        compact
+        icon="i-heroicons-bars-arrow-down"
+        :title="$t('gradientGenerator.savedEmpty')"
+      />
 
       <ul
         v-else
@@ -296,7 +296,7 @@ watch(angleInput, (value) => {
 const gradientValue = computed(() => buildGradientValue(state));
 const cssDeclaration = computed(() => buildCssDeclaration(state));
 
-const fileStem = computed(() => `magicolor-gradient-${state.type}-${state.angle}`);
+const fileStem = computed(() => `magikolor-gradient-${state.type}-${state.angle}`);
 
 // galería local
 const savedGradients = ref<SavedGradient[]>([]);

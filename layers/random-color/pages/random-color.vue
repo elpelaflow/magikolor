@@ -74,9 +74,12 @@
           </li>
         </ul>
 
-        <p v-else>
-          {{ $t('recent.noneFound') }}
-        </p>
+        <CommonEmptyState
+          v-else
+          compact
+          icon="i-heroicons-arrow-path"
+          :title="$t('recent.noneFound')"
+        />
       </div>
     </ClientOnly>
   </div>

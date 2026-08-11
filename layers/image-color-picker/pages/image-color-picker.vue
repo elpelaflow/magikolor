@@ -107,8 +107,12 @@
 
 <script setup lang="ts">
 import { object, type InferType, string } from 'yup';
-import { prominent } from 'color.js';
 import type { FormSubmitEvent } from '#ui/types';
+
+import { extractPaletteFromImage } from '../utils/image-color-picker.util';
+import { useImagePalettes } from '~/layers/common/composables/useImagePalettes';
+import { sendPlausibleEvent } from '~/layers/plausible/utils/plausible.util';
+import { PlausibleEventName } from '~/layers/plausible/types';
 
 const { t } = useI18n();
 const localePath = useLocalePath();
@@ -126,10 +130,13 @@ useSeoMeta({
 
 const notifications = useNotifications();
 const { mutate: create, isPending } = useCreatePalette();
+const imagePalettes = useImagePalettes();
 
 const files = ref<FileList>();
 const imageUrl = ref('');
 const isFetchingImage = ref(false);
+/** Colores extraídos de la imagen actual (para guardarlos junto con ella). */
+const extractedColors = ref<string[]>([]);
 
 const state = ref({
   prompt: '',
@@ -146,12 +153,29 @@ export type Form = InferType<typeof FormSchema>;
 function onSubmit(event: FormSubmitEvent<Form>): void {
   create({ prompt: event.data.prompt }, {
     onError: (err) => {
-      notifications.addError(err.message ?? 'Error creating palette.');
+      notifications.addError(err.message ?? t('palette.createError'));
     },
     onSuccess: (value) => {
+      void savePaletteWithImage(extractedColors.value);
       void navigateTo(localePath(`/palette/${value.id}`));
     }
   });
+}
+
+/**
+ * Persiste la paleta extraída JUNTO con la imagen (localStorage) para que
+ * quede guardada en la sección "Image palettes" de /favorites.
+ */
+async function savePaletteWithImage(colors: string[], image?: string): Promise<void> {
+  const img = image ?? state.value.dataUrl;
+  if (colors.length === 0 || img === '') {
+    return;
+  }
+  const ok = await imagePalettes.save({ image: img, colors, source: 'image-color-picker' });
+  if (ok) {
+    notifications.addSuccess(t('imageColorPicker.savedWithImage'));
+    sendPlausibleEvent(PlausibleEventName.IMAGE_PALETTE_SAVED);
+  }
 }
 
 async function onClickExample(thumbnailUrl: string): Promise<void> {
@@ -159,19 +183,24 @@ async function onClickExample(thumbnailUrl: string): Promise<void> {
 
   const imageBase64 = await getImageBase64(thumbnailUrl);
   if (imageBase64 === null) {
+    isFetchingImage.value = false;
     return;
   }
 
-  const colors = await prominent(imageBase64, {
-    amount: 5,
-    format: 'hex'
-  });
+  const colors = await extractPaletteFromImage(imageBase64);
+  if (colors === null || colors.length === 0) {
+    notifications.addError(t('imageColorPicker.extractionError'));
+    isFetchingImage.value = false;
+    return;
+  }
+  extractedColors.value = colors;
 
   create({ prompt: colors.toString() }, {
     onError: (err) => {
-      notifications.addError(err.message ?? 'Error creating palette.');
+      notifications.addError(err.message ?? t('palette.createError'));
     },
     onSuccess: (value) => {
+      void savePaletteWithImage(extractedColors.value, imageBase64);
       void navigateTo(localePath(`/palette/${value.id}`));
     }
   });
@@ -191,9 +220,12 @@ async function onClickUrl(): Promise<void> {
     const response = await $fetch<{ dataUrl: string }>('/api/image-url', { query: { url } });
     state.value.dataUrl = response.dataUrl;
 
-    const colors = await prominent(response.dataUrl, { amount: 5, format: 'hex' });
-    if (colors.length > 0) {
+    const colors = await extractPaletteFromImage(response.dataUrl);
+    if (colors !== null && colors.length > 0) {
+      extractedColors.value = colors;
       state.value.prompt = colors.toString();
+    } else {
+      notifications.addError(t('imageColorPicker.extractionError'));
     }
   } catch (err: any) {
     const message = err?.data?.statusMessage ?? err?.message;
@@ -210,9 +242,12 @@ watch(files, () => {
 
     reader.onload = () => {
       state.value.dataUrl = reader.result as string;
-      void prominent(state.value.dataUrl, { amount: 5, format: 'hex' }).then(colors => {
-        if (colors.length > 0) {
+      void extractPaletteFromImage(state.value.dataUrl).then(colors => {
+        if (colors !== null && colors.length > 0) {
+          extractedColors.value = colors;
           state.value.prompt = colors.toString();
+        } else {
+          notifications.addError(t('imageColorPicker.extractionError'));
         }
       });
     };

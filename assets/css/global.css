@@ -5,14 +5,15 @@ body {
   h1 {
     @apply text-4xl font-extrabold mb-4
   }
+  /* Título de sección único en toda la app: las páginas usan <h2> sin clases */
   h2 {
-    @apply text-4xl font-extrabold mb-4
+    @apply text-xl font-semibold mb-4
   }
   h3 {
-    @apply mb-4
+    @apply text-base font-semibold mb-3
   }
   h4 {
-    @apply mb-4
+    @apply text-sm font-semibold mb-2
   }
 
   body {

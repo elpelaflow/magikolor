@@ -1,6 +1,6 @@
 # Scripts
 
-Scripts para poblar y migrar la base local de paletas (`db.palettes` en el container `magicolor_database`).
+Scripts para poblar y migrar la base local de paletas (`db.palettes` en el container `magikolor_database`).
 
 ## Secuencia completa (en cualquier PC nueva)
 
@@ -61,7 +61,7 @@ El tag `all` (1102 paletas en el JSON original) queda en la DB pero no se filtra
 
 ## rename-db.mjs
 
-Migra la base local `colormagic` -> `magicolor` tras el rebrand a Magicolor.
+Migra la base local `magicolor` -> `magikolor` tras el rebrand a Magikolor (y, si quedó sin migrar del rebrand anterior, también `colormagic` -> `magikolor`).
 
 ```powershell
 # Primero: ver que haria (no escribe nada)
@@ -70,19 +70,19 @@ node scripts/rename-db.mjs --dry-run
 # Despues: ejecutar la migracion
 node scripts/rename-db.mjs
 
-# Opcional: borrar tambien el user viejo colormagic de admin
+# Opcional: borrar tambien los users viejos magicolor/colormagic de admin
 node scripts/rename-db.mjs --drop-old-user
 ```
 
 Que hace:
-1. Conecta a Mongo local (prueba credenciales nuevas `magicolor:secret` y si falla, las viejas `colormagic:secret`).
-2. Renombra todas las collections de `colormagic.*` a `magicolor.*` (`renameCollection`).
-3. Crea (o actualiza) el user root `magicolor` en `admin`.
-4. Con `--drop-old-user`, borra el user viejo `colormagic`.
+1. Conecta a Mongo local (prueba credenciales nuevas `magikolor:secret` y si falla, las viejas `magicolor:secret` / `colormagic:secret`).
+2. Renombra todas las collections de `magicolor.*` (y `colormagic.*` si existe) a `magikolor.*` (`renameCollection`).
+3. Crea (o actualiza) el user root `magikolor` en `admin`.
+4. Con `--drop-old-user`, borra los users viejos `magicolor` y `colormagic`.
 
-Idempotente: si ya migraste, la segunda corrida no rompe nada (reporta que `magicolor` ya existe).
+Idempotente: si ya migraste, la segunda corrida no rompe nada (reporta que `magikolor` ya existe).
 
-> **Por que hace falta**: al recrear el container (`docker compose up -d` con el compose nuevo) Docker preserva el volumen y los datos, pero el init de Mongo NO vuelve a correr — el user `magicolor` lo crea este script. Si arrancas de cero (volumen nuevo), no hace falta: la db ya nace como `magicolor`.
+> **Por que hace falta**: al recrear el container (`docker compose up -d` con el compose nuevo) Docker preserva el volumen y los datos, pero el init de Mongo NO vuelve a correr — el user `magikolor` lo crea este script. Si arrancas de cero (volumen nuevo), no hace falta: la db ya nace como `magikolor`.
 
 ## Notas
 

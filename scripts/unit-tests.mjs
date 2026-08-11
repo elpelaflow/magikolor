@@ -7,6 +7,7 @@
  *   - contraste WCAG (layers/contrast-checker/utils/color-contrast.util.ts)
  *   - mezcla RYB (layers/color-mixer/utils/color-mixer.util.ts)
  *   - gradient builder (layers/gradient-generator/utils/gradient-generator.util.ts)
+ *   - gradient palette (layers/gradient-palette/utils/gradient-palette.util.ts)
  *   - formatos de all-colors (layers/all-colors/utils/color-formats.util.ts)
  *   - matcher Pantone (layers/all-colors/utils/pantone-dataset.ts)
  *
@@ -35,19 +36,28 @@ const SOURCES = {
   'color-converter.util.ts': join(ROOT, 'layers/common/utils/color-converter.util.ts'),
   'color-contrast.util.ts': join(ROOT, 'layers/contrast-checker/utils/color-contrast.util.ts'),
   'gradient-generator.util.ts': join(ROOT, 'layers/gradient-generator/utils/gradient-generator.util.ts'),
+  'gradient-palette.util.ts': join(ROOT, 'layers/gradient-palette/utils/gradient-palette.util.ts'),
+  'oklch.util.ts': join(ROOT, 'layers/color-palette-creator/utils/oklch.util.ts'),
   'color-mixer.util.ts': join(ROOT, 'layers/color-mixer/utils/color-mixer.util.ts'),
   'color-formats.util.ts': join(ROOT, 'layers/all-colors/utils/color-formats.util.ts'),
   'pantone-data.json': join(ROOT, 'layers/all-colors/utils/pantone-data.json'),
-  'pantone-dataset.ts': join(ROOT, 'layers/all-colors/utils/pantone-dataset.ts')
+  'pantone-dataset.ts': join(ROOT, 'layers/all-colors/utils/pantone-dataset.ts'),
+  'color-blind.util.ts': join(ROOT, 'layers/common/utils/color-blind.util.ts')
 };
 
 const PATCHES = {
   // color-mixer importa desde el shim de palette; redirigimos a la copia canónica
+  'gradient-palette.util.ts': [
+    ["from '~/layers/color-palette-creator/utils/oklch.util'", "from './oklch.util.ts'"]
+  ],
   'color-mixer.util.ts': [
     ["from '~/layers/palette/utils/color-converter.util'", "from './color-converter.util.ts'"]
   ],
   'color-formats.util.ts': [
     ["from '~/layers/common/utils/color-converter.util'", "from './color-converter.util.ts'"]
+  ],
+  'color-blind.util.ts': [
+    ["from './color-converter.util'", "from './color-converter.util.ts'"]
   ],
   'pantone-dataset.ts': [
     ["from './color-formats.util'", "from './color-formats.util.ts'"],
@@ -99,8 +109,10 @@ async function main() {
   const contrast = await import(pathToFileURL(join(TMP, 'color-contrast.util.ts')).href);
   const mixer = await import(pathToFileURL(join(TMP, 'color-mixer.util.ts')).href);
   const gradient = await import(pathToFileURL(join(TMP, 'gradient-generator.util.ts')).href);
+  const gradientPalette = await import(pathToFileURL(join(TMP, 'gradient-palette.util.ts')).href);
   const formats = await import(pathToFileURL(join(TMP, 'color-formats.util.ts')).href);
   const pantone = await import(pathToFileURL(join(TMP, 'pantone-dataset.ts')).href);
+  const colorBlind = await import(pathToFileURL(join(TMP, 'color-blind.util.ts')).href);
 
   // ---------------- color-converter (canónica común) ----------------
   test('hexToRgb #ff0000', () => assert.deepEqual(converter.hexToRgb('#ff0000'), { r: 255, g: 0, b: 0 }));
@@ -242,6 +254,75 @@ async function main() {
     assert.equal(v, 'linear-gradient(45deg, #ffffff 0%, #ffffff 100%)');
   });
 
+  // ---------------- gradient palette ----------------
+  test('paleta de 2 colores devuelve exactamente los extremos', () => {
+    const colors = gradientPalette.createGradientPalette('#ff0000', '#0000ff', 2);
+    assert.equal(colors.length, 2);
+    assert.equal(colors[0], '#ff0000');
+    assert.equal(colors[1], '#0000ff');
+  });
+  test('paleta de 5 colores: extremos incluidos y 5 pasos', () => {
+    const colors = gradientPalette.createGradientPalette('#000000', '#ffffff', 5);
+    assert.equal(colors.length, 5);
+    assert.equal(colors[0], '#000000');
+    assert.equal(colors[4], '#ffffff');
+  });
+  test('paleta de 5: los pasos intermedios son neutros', () => {
+    const colors = gradientPalette.createGradientPalette('#000000', '#ffffff', 5);
+    const mid = colors[2];
+    const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/.exec(mid);
+    assert.ok(m, `mid no es hex: ${mid}`);
+    const [r, g, b] = [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+    assert.ok(Math.abs(r - g) <= 1 && Math.abs(g - b) <= 1, `no es neutro: ${mid}`);
+    assert.ok(r > 60 && r < 140, `fuera del rango esperado del medio: ${mid}`);
+  });
+  test('count se clampa a [2, 10]', () => {
+    assert.equal(gradientPalette.createGradientPalette('#000000', '#ffffff', 1).length, 2);
+    assert.equal(gradientPalette.createGradientPalette('#000000', '#ffffff', 99).length, 10);
+    assert.equal(gradientPalette.createGradientPalette('#000000', '#ffffff', 6.7).length, 7);
+  });
+  test('hex inválido → paleta vacía', () => {
+    assert.deepEqual(gradientPalette.createGradientPalette('zzz', '#ffffff', 5), []);
+    assert.deepEqual(gradientPalette.createGradientPalette('#12345', '#ffffff', 5), []);
+  });
+  test('interpolateHex con ratio 0/1 devuelve los extremos', () => {
+    assert.equal(gradientPalette.interpolateHex('#123456', '#abcdef', 0), '#123456');
+    assert.equal(gradientPalette.interpolateHex('#123456', '#abcdef', 1), '#abcdef');
+  });
+  test('interpolateHex es simétrico (50% A→B = 50% B→A)', () => {
+    assert.equal(
+      gradientPalette.interpolateHex('#ff0000', '#0000ff', 0.5),
+      gradientPalette.interpolateHex('#0000ff', '#ff0000', 0.5)
+    );
+  });
+  test('normalizeHex expande 3 dígitos y minúsculas', () => {
+    assert.equal(gradientPalette.normalizeHex('#f00'), '#ff0000');
+    assert.equal(gradientPalette.normalizeHex('ABC'), '#aabbcc');
+    assert.equal(gradientPalette.normalizeHex('#123456'), '#123456');
+    assert.equal(gradientPalette.normalizeHex('xyz'), null);
+  });
+  test('buildCssVariables genera --gradient-1..N', () => {
+    const vars = gradientPalette.buildCssVariables(['#ff0000', '#0000ff']);
+    assert.ok(vars.includes('--gradient-1: #ff0000;'));
+    assert.ok(vars.includes('--gradient-2: #0000ff;'));
+  });
+  test('buildLinearGradient une los hex con comas', () => {
+    assert.equal(
+      gradientPalette.buildLinearGradient(['#ff0000', '#0000ff']),
+      'linear-gradient(90deg, #ff0000, #0000ff)'
+    );
+    assert.equal(gradientPalette.buildLinearGradient([]), '');
+  });
+  test('buildGradientPaletteJson incluye colores, css y extremos', () => {
+    const json = gradientPalette.buildGradientPaletteJson('#ff0000', '#0000ff', ['#ff0000', '#800080', '#0000ff']);
+    assert.equal(json.count, 3);
+    assert.equal(json.colorA, '#ff0000');
+    assert.equal(json.colorB, '#0000ff');
+    assert.equal(json.colors.length, 3);
+    assert.ok(json.cssGradient.startsWith('linear-gradient'));
+    assert.ok(json.cssVariables.includes('--gradient-1'));
+  });
+
   // ---------------- formatos all-colors ----------------
   test('rgbToHsv rojo', () => assert.deepEqual(formats.rgbToHsv(converter.hexToRgb('#ff0000')), { h: 0, s: 100, v: 100 }));
   test('rgbToLab blanco ≈ L100 a0 b0', () => {
@@ -269,6 +350,35 @@ async function main() {
     assert.equal(v[2].hex, '#ff0000');
   });
   test('mixHex 50% negro+blanco = gris medio', () => assert.equal(formats.mixHex('#000000', '#ffffff', 0.5), '#808080'));
+
+  // ---------------- color blindness (matrices daltonize) ----------------
+  test('achromatopsia: resultado en escala de grises (r=g=b)', () => {
+    for (const hex of ['#ff0000', '#00ff00', '#0000ff', '#a1b2c3', '#123456']) {
+      const rgb = converter.hexToRgb(colorBlind.simulateColorBlindness(hex, 'achromatopsia'));
+      assert.equal(rgb.r, rgb.g, `${hex}: r=${rgb.r} g=${rgb.g}`);
+      assert.equal(rgb.g, rgb.b, `${hex}: g=${rgb.g} b=${rgb.b}`);
+    }
+  });
+  test('achromatopsia: valores conocidos (luminancia)', () => {
+    assert.equal(colorBlind.simulateColorBlindness('#ff0000', 'achromatopsia'), '#4c4c4c');
+    assert.equal(colorBlind.simulateColorBlindness('#00ff00', 'achromatopsia'), '#969696');
+    assert.equal(colorBlind.simulateColorBlindness('#0000ff', 'achromatopsia'), '#1d1d1d');
+  });
+  test('protanopia: rojo puro se vuelve amarillento (valor conocido)', () => {
+    assert.equal(colorBlind.simulateColorBlindness('#ff0000', 'protanopia'), '#918e00');
+  });
+  test('deuteranopia: verde puro se vuelve marrón (valor conocido)', () => {
+    assert.equal(colorBlind.simulateColorBlindness('#00ff00', 'deuteranopia'), '#604d4d');
+  });
+  test('tritanopia: azul puro se vuelve teal (valor conocido)', () => {
+    assert.equal(colorBlind.simulateColorBlindness('#0000ff', 'tritanopia'), '#009186');
+  });
+  test('simular paleta conserva cantidad y orden', () => {
+    const palette = ['#ff0000', '#00ff00', '#0000ff'];
+    const simulated = colorBlind.simulatePaletteColorBlindness(palette, 'protanopia');
+    assert.equal(simulated.length, palette.length);
+    assert.equal(simulated[0], colorBlind.simulateColorBlindness(palette[0], 'protanopia'));
+  });
 
   // ---------------- dataset Pantone ----------------
   test('dataset tiene más de 3000 muestras', () => {
